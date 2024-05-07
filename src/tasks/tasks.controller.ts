@@ -37,6 +37,7 @@ export class TasksController {
   @Post(':id')
   async start(@Param('id') id: string) {
     console.log('1');
+    console.log(id);
     switch (id) {
       // 커뮤니티
       case TASK_MAP.디시인사이드.name:
