@@ -161,15 +161,7 @@ export class 오늘의유머 extends PageTask {
             const createdAt = await this.getCreatedAt(page);
             const contentText = await this.getContentText(page);
             const contentImageUrl = await this.getContentImageUrl(page);
-            console.log({
-              category_id: category.id,
-              url: contentUrl,
-              title: title,
-              author: author,
-              content_text: contentText,
-              content_img_url: contentImageUrl,
-              created_at: createdAt,
-            });
+
             data.push({
               category_id: category.id,
               url: contentUrl,

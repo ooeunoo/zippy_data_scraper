@@ -141,7 +141,6 @@ export class 개드립 extends PageTask {
         await page.goto(pageUrl, {
           waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
         });
-        console.log(pageUrl);
 
         const urls = await this.getContentUrls(page);
         const existsUrls = await this.findExistsUrls(urls);

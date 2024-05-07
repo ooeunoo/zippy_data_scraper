@@ -144,7 +144,6 @@ export class 인스티즈 extends PageTask {
         );
         const existsUrls = await this.findExistsUrls(urls);
         const contentUrls = await this.removeExistsUrls(urls, existsUrls);
-        console.log(contentUrls);
         if (contentUrls.length == 0) break;
 
         for await (const contentUrl of contentUrls) {
@@ -155,24 +154,11 @@ export class 인스티즈 extends PageTask {
             await sleep(PAGE_SLEEP);
 
             const title = await this.getTitle(page);
-            console.log('title:', title);
             const author = await this.getAuthor(page);
-            console.log('author:', author);
             const createdAt = await this.getCreatedAt(page);
-            console.log('createdAt:', createdAt);
             const contentText = await this.getContentText(page);
-            console.log('contentText:', contentText);
             const contentImageUrl = await this.getContentImageUrl(page);
-            console.log('contentImageUrl:', contentImageUrl);
-            console.log({
-              category_id: category.id,
-              url: contentUrl,
-              title: title,
-              author: author,
-              content_text: contentText,
-              content_img_url: contentImageUrl,
-              created_at: createdAt,
-            });
+
             data.push({
               category_id: category.id,
               url: contentUrl,
