@@ -1,11 +1,12 @@
 FROM node:18-buster
 WORKDIR /app
-COPY package*.json ./ 
-RUN npm ci --only=production
 
 ENV NODE_ENV production
 
 COPY . .
+
+COPY package*.json ./ 
+RUN npm ci --only=production
 
 RUN apt-get update && apt-get install -y \
     wget \
