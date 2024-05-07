@@ -22,9 +22,9 @@ const page_task_1 = require("../../app/templates/page_task");
 const supabase_service_1 = require("../../supabase/supabase.service");
 const url_1 = require("../../app/utils/url");
 const value_1 = require("../../app/constants/value");
-const puppeteer_1 = require("puppeteer");
 const time_1 = require("../../app/utils/time");
 const task_constant_1 = require("../task.constant");
+const task_utils_1 = require("../task.utils");
 const task = task_constant_1.TASK_MAP.루리웹;
 let 루리웹 = class 루리웹 extends page_task_1.PageTask {
     constructor(supabaseService) {
@@ -101,9 +101,7 @@ let 루리웹 = class 루리웹 extends page_task_1.PageTask {
         if (this.isChannelRunning)
             return;
         this.isChannelRunning = true;
-        this.browser = await puppeteer_1.default.launch({
-            headless: true,
-        });
+        this.browser = await (0, task_utils_1.getBrowser)();
         await Promise.all(this.categories.map(async (category) => {
             const jobId = `${this.channel.name_ko}/${category.name}`;
             await this.runCategory(jobId, category);

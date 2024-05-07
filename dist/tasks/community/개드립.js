@@ -24,7 +24,7 @@ const url_1 = require("../../app/utils/url");
 const value_1 = require("../../app/constants/value");
 const time_1 = require("../../app/utils/time");
 const task_constant_1 = require("../task.constant");
-const chrome_aws_lambda_1 = require("chrome-aws-lambda");
+const task_utils_1 = require("../task.utils");
 const task = task_constant_1.TASK_MAP.개드립;
 let 개드립 = class 개드립 extends page_task_1.PageTask {
     constructor(supabaseService) {
@@ -101,13 +101,7 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
         if (this.isChannelRunning)
             return;
         this.isChannelRunning = true;
-        this.browser = await chrome_aws_lambda_1.default.puppeteer.launch({
-            args: chrome_aws_lambda_1.default.args,
-            defaultViewport: chrome_aws_lambda_1.default.defaultViewport,
-            executablePath: await chrome_aws_lambda_1.default.executablePath,
-            headless: chrome_aws_lambda_1.default.headless,
-            ignoreHTTPSErrors: true,
-        });
+        this.browser = await (0, task_utils_1.getBrowser)();
         await Promise.all(this.categories.map(async (category) => {
             const jobId = `${this.channel.name_ko}/${category.name}`;
             await this.runCategory(jobId, category);
