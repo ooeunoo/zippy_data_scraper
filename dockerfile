@@ -15,9 +15,11 @@ RUN apt-get update && apt-get install -y \
     google-chrome-stable \
     --no-install-recommends \
     && apt-get purge --auto-remove -y wget \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get install libgbm1 \
+    && apt-get install libasound2
 
-USER node
 
 EXPOSE 3000
+RUN node node_modules/puppeteer/install.js
 CMD ["npm", "run", "start:prod"]
