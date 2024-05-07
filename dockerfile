@@ -10,6 +10,4 @@ COPY . .
 USER node
 
 EXPOSE 3000
-RUN npm install -g @nestjs/cli
-RUN npm run build
 CMD ["npm", "run", "start:prod"]
