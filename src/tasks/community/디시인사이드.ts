@@ -107,10 +107,12 @@ export class 디시인사이드 extends PageTask {
   }
 
   async run() {
+    console.log('3');
     if (this.isChannelRunning) return;
 
     this.isChannelRunning = true;
     this.browser = await getBrowser();
+    console.log('4');
 
     await Promise.all(
       this.categories.map(async (category) => {
@@ -118,6 +120,7 @@ export class 디시인사이드 extends PageTask {
         await this.runCategory(jobId, category);
       }),
     );
+    console.log('6');
 
     this.isChannelRunning = false;
     this.browser.close();
@@ -132,6 +135,7 @@ export class 디시인사이드 extends PageTask {
 
     try {
       this.logger.log(`${jobId} 시작`);
+      console.log('5');
 
       const list_view_template = this.channel.list_view_url;
       const list_view_url = list_view_template.replace(
