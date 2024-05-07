@@ -2,9 +2,10 @@ FROM node:18-buster
 WORKDIR /app
 
 ENV NODE_ENV production
+
 RUN apt update -y \
-    apt install libnss \
-    apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
+    && apt install -y libnss \
+    && apt install -y libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
 
 
 
