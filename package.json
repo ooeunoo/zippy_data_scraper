@@ -18,7 +18,6 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "node node_modules/puppeteer/install.js",
     "deploy": "npm run build && ctype apply -f zippy-tasks.yaml"
   },
   "dependencies": {
@@ -32,7 +31,6 @@
     "cron": "^3.1.7",
     "ejs": "^3.1.9",
     "puppeteer": "^22.8.0",
-    "puppeteer-cluster": "^0.24.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.5"
