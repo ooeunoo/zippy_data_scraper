@@ -8,6 +8,7 @@ import { ICategory } from '../../app/interfaces/category';
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { sleep } from '../../app/utils/time';
 import { PAGE_SLEEP, TASK_MAP } from '../task.constant';
+import { getBrowser } from '../task.utils';
 
 const task = TASK_MAP.루리웹;
 
@@ -97,9 +98,7 @@ export class 루리웹 extends PageTask {
     if (this.isChannelRunning) return;
 
     this.isChannelRunning = true;
-    this.browser = await puppeteer.launch({
-      headless: true,
-    });
+    this.browser = await getBrowser();
 
     await Promise.all(
       this.categories.map(async (category) => {

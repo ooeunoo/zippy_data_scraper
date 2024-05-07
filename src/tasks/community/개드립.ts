@@ -3,14 +3,12 @@ import { PageTask } from '../../app/templates/page_task';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { normalizeUrl } from '../../app/utils/url';
 import { IContent } from '../../app/interfaces/content';
-import {
-  WAIT_UNTIL_DOMCONTENT_LOADED,
-  WAIT_UNTIL_NETWOKR_IDLE_2,
-} from '../../app/constants/value';
+import { WAIT_UNTIL_NETWOKR_IDLE_2 } from '../../app/constants/value';
 import { ICategory } from '../../app/interfaces/category';
-import puppeteer, { Browser, Page } from 'puppeteer';
 import { calculateTimeAgo, sleep } from '../../app/utils/time';
 import { PAGE_SLEEP, TASK_MAP } from '../task.constant';
+import puppeteer, { Browser, Page } from 'puppeteer';
+import { getBrowser } from '../task.utils';
 
 const task = TASK_MAP.개드립;
 
@@ -102,9 +100,7 @@ export class 개드립 extends PageTask {
     if (this.isChannelRunning) return;
 
     this.isChannelRunning = true;
-    this.browser = await puppeteer.launch({
-      headless: true,
-    });
+    this.browser = await getBrowser();
 
     await Promise.all(
       this.categories.map(async (category) => {
