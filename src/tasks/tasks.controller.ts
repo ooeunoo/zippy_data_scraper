@@ -14,7 +14,7 @@ import { 클리앙 } from './community/클리앙';
 import { 엠엘비파크 } from './community/엠엘비파크';
 import { 연합뉴스 } from './news/연합뉴스';
 
-@Controller()
+@Controller('task')
 export class TasksController {
   constructor(
     // 커뮤니티
