@@ -43,8 +43,11 @@ let TasksController = class TasksController {
         this._연합뉴스 = _연합뉴스;
     }
     async start(id) {
+        console.log('1');
+        console.log(id);
         switch (id) {
             case task_constant_1.TASK_MAP.디시인사이드.name:
+                console.log('2');
                 await this._디시인사이드.run();
                 break;
             case task_constant_1.TASK_MAP.개드립.name:

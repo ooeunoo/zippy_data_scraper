@@ -4,7 +4,8 @@ WORKDIR /app
 ENV NODE_ENV production
 
 RUN apt update -y \
-    && apt install -y libnss3 
+    && apt install -y libnss3 \
+    && apt install -y libdbus-1-3
 
 COPY . .
 
