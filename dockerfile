@@ -2,6 +2,9 @@ FROM node:18-buster
 WORKDIR /app
 
 ENV NODE_ENV production
+RUN sudo apt update -y \
+    sudo apt install -y libnss3
+
 
 COPY . .
 
