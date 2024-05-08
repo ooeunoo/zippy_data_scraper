@@ -78,4 +78,7 @@ export class TasksController {
     }
     return true;
   }
+
+  @Post('memory')
+  async getMemeory() {}
 }

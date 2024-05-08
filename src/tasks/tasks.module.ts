@@ -14,9 +14,10 @@ import { 인스티즈 } from './community/인스티즈';
 import { 엠엘비파크 } from './community/엠엘비파크';
 import { 연합뉴스 } from './news/연합뉴스';
 import { 클리앙 } from './community/클리앙';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
-  imports: [SupabaseModule, ConfigModule.forRoot()],
+  imports: [SupabaseModule, ConfigModule.forRoot(), TelegramModule],
   providers: [
     // 커뮤니티
     디시인사이드,

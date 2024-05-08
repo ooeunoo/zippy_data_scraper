@@ -9,6 +9,7 @@ import puppeteer, { Browser, Page } from 'puppeteer';
 import { sleep } from '../../app/utils/time';
 import { PAGE_SLEEP, TASK_MAP } from '../task.constant';
 import { getBrowser } from '../task.utils';
+import { TelegramService } from '../../telegram/telegram.service';
 
 const task = TASK_MAP.연합뉴스;
 
@@ -19,7 +20,10 @@ export class 연합뉴스 extends PageTask {
   logger = new Logger(task.name);
   private browser: Browser = null;
 
-  constructor(public supabaseService: SupabaseService) {
+  constructor(
+    public supabaseService: SupabaseService,
+    private telegramServie: TelegramService,
+  ) {
     super(supabaseService, task.id);
   }
 
@@ -112,6 +116,7 @@ export class 연합뉴스 extends PageTask {
 
   async run() {
     if (this.isChannelRunning) return;
+    await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
 
     this.isChannelRunning = true;
     this.browser = await getBrowser();
@@ -139,7 +144,8 @@ export class 연합뉴스 extends PageTask {
     const page = await this.browser.newPage();
 
     try {
-      this.logger.log(`${jobId} 시작`);
+      await this.telegramServie.sendMessage(`${jobId} 작업 시작`);
+      this.logger.log(`${jobId} 작업 시작`);
 
       const list_view_template = this.channel.list_view_url;
       const list_view_url = list_view_template.replace(
@@ -174,7 +180,17 @@ export class 연합뉴스 extends PageTask {
             const createdAt = await this.getCreatedAt(page);
             const contentText = await this.getContentText(page);
             const contentImageUrl = await this.getContentImageUrl(page);
-
+            this.logger.log(
+              `${jobId}: ${{
+                category_id: category.id,
+                url: contentUrl,
+                title: title,
+                author: author,
+                content_text: contentText,
+                content_img_url: contentImageUrl,
+                created_at: createdAt,
+              }}`,
+            );
             data.push({
               category_id: category.id,
               url: contentUrl,
@@ -195,9 +211,13 @@ export class 연합뉴스 extends PageTask {
       }
     } catch (e) {
       this.logger.error(`${jobId} ${e}`);
+      await this.telegramServie.sendMessage(`${jobId}: ${e}`);
     } finally {
       this.isCategoryRunning[jobId] = false;
-      this.logger.log(`${jobId} 끝: ${total}개 업데이트`);
+      this.logger.log(`${task.name} 작업 마침: ${total}개 업데이트되었습니다.`);
+      await this.telegramServie.sendMessage(
+        `${task.name} 작업 마침: ${total}개 업데이트되었습니다.`,
+      );
       await page.close();
     }
   }

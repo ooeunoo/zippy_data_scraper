@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { AppController } from './app.controller';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AppController } from './app.controller';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     TasksModule,
+    TelegramModule,
   ],
   controllers: [AppController],
 })
