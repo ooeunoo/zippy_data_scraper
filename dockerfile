@@ -4,7 +4,7 @@ WORKDIR /app
 ENV NODE_ENV production
 
 RUN apt update -y \
-    && apt install -y libnss3 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0
+    && apt install -y libnss3 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 libcups2 
 COPY . .
 
 RUN npm ci --only=production
