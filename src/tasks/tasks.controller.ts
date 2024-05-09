@@ -84,17 +84,72 @@ export class TasksController {
   @Post('/limitpage/:page')
   async startAll(@Param('page') page: number) {
     try {
-      await this._루리웹.run(page);
-      await this._개드립.run(page);
-      await this._네이트판.run(page);
-      await this._뽐뿌.run(page);
-      await this._디시인사이드.run(page);
-      await this._에펨코리아.run(page);
-      await this._오늘의유머.run(page);
-      await this._웃긴대학.run(page);
-      await this._인스티즈.run(page);
-      await this._클리앙.run(page);
-      await this._엠엘비파크.run(page);
+      try {
+        await this._루리웹.run(page);
+      } catch (e) {}
+      try {
+        await this._개드립.run(page);
+      } catch (e) {}
+      try {
+        await this._네이트판.run(page);
+      } catch (e) {}
+      try {
+        await this._뽐뿌.run(page);
+      } catch (e) {}
+      try {
+        await this._디시인사이드.run(page);
+      } catch (e) {}
+      try {
+        await this._에펨코리아.run(page);
+      } catch (e) {}
+      try {
+        await this._오늘의유머.run(page);
+      } catch (e) {}
+      try {
+        await this._웃긴대학.run(page);
+      } catch (e) {}
+      try {
+        await this._인스티즈.run(page);
+      } catch (e) {}
+      try {
+        await this._클리앙.run(page);
+      } catch (e) {}
+      try {
+        await this._엠엘비파크.run(page);
+      } catch (e) {}
+      try {
+        await this._루리웹.run(page);
+      } catch (e) {}
+      try {
+        await this._개드립.run(page);
+      } catch (e) {}
+      try {
+        await this._네이트판.run(page);
+      } catch (e) {}
+      try {
+        await this._뽐뿌.run(page);
+      } catch (e) {}
+      try {
+        await this._디시인사이드.run(page);
+      } catch (e) {}
+      try {
+        await this._에펨코리아.run(page);
+      } catch (e) {}
+      try {
+        await this._오늘의유머.run(page);
+      } catch (e) {}
+      try {
+        await this._웃긴대학.run(page);
+      } catch (e) {}
+      try {
+        await this._인스티즈.run(page);
+      } catch (e) {}
+      try {
+        await this._클리앙.run(page);
+      } catch (e) {}
+      try {
+        await this._엠엘비파크.run(page);
+      } catch (e) {}
       this.logger.log('작업이 모두 완료되었습니다.');
     } catch (e) {
       console.log(e);

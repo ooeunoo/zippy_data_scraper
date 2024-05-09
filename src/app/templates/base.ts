@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Logger, OnModuleInit } from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { IChannel } from '../interfaces/channel';
 import { ICategory } from '../interfaces/category';
 import { TABLE } from '../constants/table';
-import puppeteer, { Browser, Page } from 'puppeteer';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { ITask } from '../interfaces/task';
-
-const CRON = CronExpression.EVERY_MINUTE;
+import { CronExpression } from '@nestjs/schedule';
 
 export abstract class TaskBase implements OnModuleInit {
   abstract isChannelRunning: boolean;

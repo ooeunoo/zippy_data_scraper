@@ -36,9 +36,10 @@ export class 개드립 extends PageTask {
 
   async getContentUrls(page: Page): Promise<string[]> {
     const urls = await page.evaluate(async () => {
-      const table = document.querySelector('.ed.board-list');
-      const tableBody = table.querySelector('tbody');
-      const contents = tableBody.querySelectorAll('tr:not(.notice)');
+      const table = document.querySelector(
+        '#main > div > div.eq.section.secontent.background-color-content > div > div.ed.board-list > table > tbody',
+      );
+      const contents = table.querySelectorAll('tr:not(.notice)');
       const urls = [];
       for (const content of contents) {
         const titleSection = content.querySelector('td.title > span');
@@ -113,7 +114,7 @@ export class 개드립 extends PageTask {
     await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
 
     this.isChannelRunning = true;
-    this.browser = await getBrowser();
+    this.browser = await getBrowser(false);
 
     await Promise.all(
       this.categories.map(async (category) => {
