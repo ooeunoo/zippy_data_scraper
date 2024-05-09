@@ -176,7 +176,6 @@ export class 개드립 extends PageTask {
           waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
         });
 
-        console.log(pageUrl);
         const urls = await this.getContentUrls(page);
         const existsUrls = await this.findExistsUrls(urls);
         const contentUrls = await this.removeExistsUrls(urls, existsUrls);
@@ -191,11 +190,8 @@ export class 개드립 extends PageTask {
             await sleep(PAGE_SLEEP);
 
             const title = await this.getTitle(page);
-            console.log(title);
             const author = await this.getAuthor(page);
-            console.log(author);
             const createdAt = await this.getCreatedAt(page);
-            console.log(createdAt);
 
             const contentText = await this.getContentText(page);
             const contentImageUrl = await this.getContentImageUrl(
