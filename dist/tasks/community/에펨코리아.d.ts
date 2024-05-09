@@ -3,13 +3,15 @@ import { PageTask } from '../../app/templates/page_task';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { ICategory } from '../../app/interfaces/category';
 import { Page } from 'puppeteer';
+import { TelegramService } from '../../telegram/telegram.service';
 export declare class 에펨코리아 extends PageTask {
     supabaseService: SupabaseService;
+    private telegramServie;
     isChannelRunning: boolean;
     isCategoryRunning: Record<string, boolean>;
     logger: Logger;
     private browser;
-    constructor(supabaseService: SupabaseService);
+    constructor(supabaseService: SupabaseService, telegramServie: TelegramService);
     getPageUrl(listViewUrl: string, page: number): string;
     getContentUrls(page: Page, baseUrl: string): Promise<string[]>;
     getTitle(page: Page): Promise<string>;

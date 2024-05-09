@@ -6,7 +6,10 @@ export declare class SupabaseService {
     private _supabase;
     constructor(configService: ConfigService);
     get client(): SupabaseClient<any, "public", any>;
-    createContents(data: IContent[]): Promise<void>;
+    createContents(data: IContent[]): Promise<{
+        result: any;
+        error: any;
+    }>;
     updateCategoryRunning(categoryId: number, running: boolean): Promise<void>;
     updateChannelRunning(channelId: number, running: boolean): Promise<void>;
 }

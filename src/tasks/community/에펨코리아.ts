@@ -74,7 +74,7 @@ export class 에펨코리아 extends PageTask {
   async getCreatedAt(page: Page): Promise<string> {
     const createdAt = await page.evaluate(async () => {
       const _createdAt = document.querySelector(
-        '#bd_capture > div.rd_hd.clear > div.board.clear > div.top_area.ngeb > span',
+        'div.top_area.ngeb > span.date.m_no',
       );
       return _createdAt ? _createdAt.textContent.trim() : null;
     });
@@ -165,7 +165,7 @@ export class 에펨코리아 extends PageTask {
             const contentImageUrl = await this.getContentImageUrl(page);
 
             this.logger.log(
-              `${jobId}: ${{
+              `${jobId}: ${JSON.stringify({
                 category_id: category.id,
                 url: contentUrl,
                 title: title,
@@ -173,7 +173,7 @@ export class 에펨코리아 extends PageTask {
                 content_text: contentText,
                 content_img_url: contentImageUrl,
                 created_at: createdAt,
-              }}`,
+              })}`,
             );
             data.push({
               category_id: category.id,
@@ -189,9 +189,17 @@ export class 에펨코리아 extends PageTask {
             continue;
           }
         }
-        await this.supabaseService.createContents(data);
+        const { error } = await this.supabaseService.createContents(data);
+        if (error != null) {
+          this.logger.error(error);
+        }
+
         total += data.length;
         pageNum += 1;
+        this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+        await this.telegramServie.sendMessage(
+          `${jobId}: ${data.length} 추가되었습니다.`,
+        );
       }
     } catch (e) {
       this.logger.error(`${jobId} ${e}`);

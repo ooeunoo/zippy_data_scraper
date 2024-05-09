@@ -19,9 +19,12 @@ export class SupabaseService {
     return this._supabase;
   }
 
-  async createContents(data: IContent[]): Promise<void> {
+  async createContents(data: IContent[]): Promise<{ result; error }> {
     try {
-      await this._supabase.from(TABLE.content).insert(data);
+      const { data: result, error } = await this._supabase
+        .from(TABLE.content)
+        .insert(data);
+      return { result, error };
     } catch (e) {
       console.log(e);
     }

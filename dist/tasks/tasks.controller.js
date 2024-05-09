@@ -41,6 +41,7 @@ let TasksController = class TasksController {
         this._클리앙 = _클리앙;
         this._엠엘비파크 = _엠엘비파크;
         this._연합뉴스 = _연합뉴스;
+        this.logger = new common_1.Logger('컨트롤러');
     }
     async start(id) {
         switch (id) {
@@ -83,6 +84,47 @@ let TasksController = class TasksController {
         }
         return true;
     }
+    async startAll() {
+        try {
+            await this.execute('디시인사이드', await this._디시인사이드.run());
+            await this.execute('네이트판', await this._네이트판.run());
+            await this.execute('루리웹', await this._루리웹.run());
+            await this.execute('뽐뿌', await this._뽐뿌.run());
+            await this.execute('에펨코리아', await this._에펨코리아.run());
+            await this.execute('오늘의유머', await this._오늘의유머.run());
+            await this.execute('웃긴대학', await this._웃긴대학.run());
+            await this.execute('인스티즈', await this._인스티즈.run());
+            await this.execute('클리앙', await this._클리앙.run());
+            await this.execute('엠엘비파크', await this._엠엘비파크.run());
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return true;
+    }
+    async execute(job, func) {
+        const start = Date.now();
+        const duration = 1 * 60 * 1000;
+        let intervalId;
+        let elapsedTime = 0;
+        try {
+            await func;
+            intervalId = setInterval(() => {
+                elapsedTime = Date.now() - start;
+                this.logger.debug(`지난시간 ${job}: ${elapsedTime}`);
+                if (elapsedTime >= duration) {
+                    throw new Error('Go To Next');
+                }
+            }, 1000);
+        }
+        catch (e) {
+            this.logger.debug(`${job}next`);
+            clearInterval(intervalId);
+        }
+        finally {
+            clearInterval(intervalId);
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)(':id'),
@@ -91,6 +133,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "start", null);
+__decorate([
+    (0, common_1.Post)('job/all'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "startAll", null);
 TasksController = __decorate([
     (0, common_1.Controller)('task'),
     __metadata("design:paramtypes", [______1.디시인사이드,

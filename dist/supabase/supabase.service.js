@@ -24,7 +24,10 @@ let SupabaseService = class SupabaseService {
     }
     async createContents(data) {
         try {
-            await this._supabase.from(table_1.TABLE.content).insert(data);
+            const { data: result, error } = await this._supabase
+                .from(table_1.TABLE.content)
+                .insert(data);
+            return { result, error };
         }
         catch (e) {
             console.log(e);

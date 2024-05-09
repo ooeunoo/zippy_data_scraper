@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { 디시인사이드 } from './community/디시인사이드';
 import { 개드립 } from './community/개드립';
 import { 네이트판 } from './community/네이트판';
@@ -23,6 +24,9 @@ export declare class TasksController {
     private readonly _클리앙;
     private readonly _엠엘비파크;
     private readonly _연합뉴스;
+    logger: Logger;
     constructor(_디시인사이드: 디시인사이드, _개드립: 개드립, _네이트판: 네이트판, _루리웹: 루리웹, _뽐뿌: 뽐뿌, _에펨코리아: 에펨코리아, _오늘의유머: 오늘의유머, _웃긴대학: 웃긴대학, _인스티즈: 인스티즈, _클리앙: 클리앙, _엠엘비파크: 엠엘비파크, _연합뉴스: 연합뉴스);
     start(id: string): Promise<boolean>;
+    startAll(): Promise<boolean>;
+    execute(job: any, func: any): Promise<void>;
 }

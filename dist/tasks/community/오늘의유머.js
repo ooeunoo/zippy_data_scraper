@@ -25,11 +25,13 @@ const value_1 = require("../../app/constants/value");
 const time_1 = require("../../app/utils/time");
 const task_constant_1 = require("../task.constant");
 const task_utils_1 = require("../task.utils");
+const telegram_service_1 = require("../../telegram/telegram.service");
 const task = task_constant_1.TASK_MAP.오늘의유머;
 let 오늘의유머 = class 오늘의유머 extends page_task_1.PageTask {
-    constructor(supabaseService) {
+    constructor(supabaseService, telegramServie) {
         super(supabaseService, task.id);
         this.supabaseService = supabaseService;
+        this.telegramServie = telegramServie;
         this.isChannelRunning = false;
         this.isCategoryRunning = {};
         this.logger = new common_1.Logger(task.name);
@@ -103,6 +105,7 @@ let 오늘의유머 = class 오늘의유머 extends page_task_1.PageTask {
     async run() {
         if (this.isChannelRunning)
             return;
+        await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
         this.isChannelRunning = true;
         this.browser = await (0, task_utils_1.getBrowser)();
         await Promise.all(this.categories.map(async (category) => {
@@ -120,7 +123,8 @@ let 오늘의유머 = class 오늘의유머 extends page_task_1.PageTask {
         let total = 0;
         const page = await this.browser.newPage();
         try {
-            this.logger.log(`${jobId} 시작`);
+            await this.telegramServie.sendMessage(`${jobId} 작업 시작`);
+            this.logger.log(`${jobId} 작업 시작`);
             const list_view_template = this.channel.list_view_url;
             const list_view_url = list_view_template.replace('{category}', category.path);
             let pageNum = 0;
@@ -148,6 +152,15 @@ let 오늘의유머 = class 오늘의유머 extends page_task_1.PageTask {
                             const createdAt = await this.getCreatedAt(page);
                             const contentText = await this.getContentText(page);
                             const contentImageUrl = await this.getContentImageUrl(page);
+                            this.logger.log(`${jobId}: ${JSON.stringify({
+                                category_id: category.id,
+                                url: contentUrl,
+                                title: title,
+                                author: author,
+                                content_text: contentText,
+                                content_img_url: contentImageUrl,
+                                created_at: createdAt,
+                            })}`);
                             data.push({
                                 category_id: category.id,
                                 url: contentUrl,
@@ -171,24 +184,32 @@ let 오늘의유머 = class 오늘의유머 extends page_task_1.PageTask {
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
-                await this.supabaseService.createContents(data);
+                const { error } = await this.supabaseService.createContents(data);
+                if (error != null) {
+                    this.logger.error(error);
+                }
                 total += data.length;
                 pageNum += 1;
+                this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+                await this.telegramServie.sendMessage(`${jobId}: ${data.length} 추가되었습니다.`);
             }
         }
         catch (e) {
             this.logger.error(`${jobId} ${e}`);
+            await this.telegramServie.sendMessage(`${jobId}: ${e}`);
         }
         finally {
             this.isCategoryRunning[jobId] = false;
-            this.logger.log(`${jobId} 끝: ${total}개 업데이트`);
+            this.logger.log(`${task.name} 작업 마침: ${total}개 업데이트되었습니다.`);
+            await this.telegramServie.sendMessage(`${task.name} 작업 마침: ${total}개 업데이트되었습니다.`);
             await page.close();
         }
     }
 };
 오늘의유머 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [supabase_service_1.SupabaseService])
+    __metadata("design:paramtypes", [supabase_service_1.SupabaseService,
+        telegram_service_1.TelegramService])
 ], 오늘의유머);
 exports.오늘의유머 = 오늘의유머;
 //# sourceMappingURL=%EC%98%A4%EB%8A%98%EC%9D%98%EC%9C%A0%EB%A8%B8.js.map

@@ -23,11 +23,12 @@ const ____3 = require("./community/\uC778\uC2A4\uD2F0\uC988");
 const _____3 = require("./community/\uC5E0\uC5D8\uBE44\uD30C\uD06C");
 const ____4 = require("./news/\uC5F0\uD569\uB274\uC2A4");
 const ___3 = require("./community/\uD074\uB9AC\uC559");
+const telegram_module_1 = require("../telegram/telegram.module");
 let TasksModule = class TasksModule {
 };
 TasksModule = __decorate([
     (0, common_1.Module)({
-        imports: [supabase_module_1.SupabaseModule, config_1.ConfigModule.forRoot()],
+        imports: [supabase_module_1.SupabaseModule, config_1.ConfigModule.forRoot(), telegram_module_1.TelegramModule],
         providers: [
             ______1.디시인사이드,
             ___1.개드립,

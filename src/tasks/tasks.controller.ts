@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Controller, Param, Post, Req } from '@nestjs/common';
+import { Controller, Logger, Param, Post, Req } from '@nestjs/common';
 import { 디시인사이드 } from './community/디시인사이드';
 import { 개드립 } from './community/개드립';
 import { TASK_MAP } from './task.constant';
@@ -16,6 +16,8 @@ import { 연합뉴스 } from './news/연합뉴스';
 
 @Controller('task')
 export class TasksController {
+  logger = new Logger('컨트롤러');
+
   constructor(
     // 커뮤니티
     private readonly _디시인사이드: 디시인사이드,
@@ -79,6 +81,45 @@ export class TasksController {
     return true;
   }
 
-  @Post('memory')
-  async getMemeory() {}
+  @Post('job/all')
+  async startAll() {
+    try {
+      await this.execute('디시인사이드', await this._디시인사이드.run());
+      // await this.execute('개드립', await this._개드립.run());
+      await this.execute('네이트판', await this._네이트판.run());
+      await this.execute('루리웹', await this._루리웹.run());
+      await this.execute('뽐뿌', await this._뽐뿌.run());
+      await this.execute('에펨코리아', await this._에펨코리아.run());
+      await this.execute('오늘의유머', await this._오늘의유머.run());
+      await this.execute('웃긴대학', await this._웃긴대학.run());
+      await this.execute('인스티즈', await this._인스티즈.run());
+      await this.execute('클리앙', await this._클리앙.run());
+      await this.execute('엠엘비파크', await this._엠엘비파크.run());
+    } catch (e) {
+      console.log(e);
+    }
+    return true;
+  }
+
+  async execute(job, func) {
+    const start = Date.now();
+    const duration = 1 * 60 * 1000; // 1분식
+    let intervalId;
+    let elapsedTime = 0;
+    try {
+      await func;
+      intervalId = setInterval(() => {
+        elapsedTime = Date.now() - start;
+        this.logger.debug(`지난시간 ${job}: ${elapsedTime}`);
+        if (elapsedTime >= duration) {
+          throw new Error('Go To Next');
+        }
+      }, 1000);
+    } catch (e) {
+      this.logger.debug(`${job}next`);
+      clearInterval(intervalId);
+    } finally {
+      clearInterval(intervalId);
+    }
+  }
 }

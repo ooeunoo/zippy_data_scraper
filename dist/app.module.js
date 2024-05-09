@@ -14,6 +14,7 @@ const config_1 = require("@nestjs/config");
 const schedule_1 = require("@nestjs/schedule");
 const tasks_module_1 = require("./tasks/tasks.module");
 const app_controller_1 = require("./app.controller");
+const telegram_module_1 = require("./telegram/telegram.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -25,6 +26,7 @@ AppModule = __decorate([
             schedule_1.ScheduleModule.forRoot(),
             config_1.ConfigModule.forRoot(),
             tasks_module_1.TasksModule,
+            telegram_module_1.TelegramModule,
         ],
         controllers: [app_controller_1.AppController],
     })

@@ -3,7 +3,10 @@ import { PageTask } from '../../app/templates/page_task';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { normalizeUrl } from '../../app/utils/url';
 import { IContent } from '../../app/interfaces/content';
-import { WAIT_UNTIL_NETWOKR_IDLE_2 } from '../../app/constants/value';
+import {
+  WAIT_UNTIL_DOMCONTENT_LOADED,
+  WAIT_UNTIL_NETWOKR_IDLE_2,
+} from '../../app/constants/value';
 import { ICategory } from '../../app/interfaces/category';
 import { calculateTimeAgo, sleep } from '../../app/utils/time';
 import { PAGE_SLEEP, TASK_MAP } from '../task.constant';
@@ -33,7 +36,9 @@ export class 개드립 extends PageTask {
 
   async getContentUrls(page: Page): Promise<string[]> {
     const urls = await page.evaluate(async () => {
-      const table = document.querySelector('table > tbody');
+      const table = document.querySelector(
+        'table.ed.table.table-divider > tbody',
+      );
       const contents = table.querySelectorAll('tr:not(.notice)');
       const urls = [];
       for (const content of contents) {
@@ -142,9 +147,10 @@ export class 개드립 extends PageTask {
 
         const pageUrl = this.getPageUrl(list_view_url, pageNum);
         await page.goto(pageUrl, {
-          waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
+          waitUntil: WAIT_UNTIL_DOMCONTENT_LOADED,
         });
 
+        console.log(pageUrl);
         const urls = await this.getContentUrls(page);
         const existsUrls = await this.findExistsUrls(urls);
         const contentUrls = await this.removeExistsUrls(urls, existsUrls);
@@ -154,7 +160,7 @@ export class 개드립 extends PageTask {
         for await (const contentUrl of contentUrls) {
           try {
             await page.goto(contentUrl, {
-              waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
+              waitUntil: WAIT_UNTIL_DOMCONTENT_LOADED,
             });
             await sleep(PAGE_SLEEP);
 
@@ -167,7 +173,7 @@ export class 개드립 extends PageTask {
               this.channel.base_url,
             );
             this.logger.log(
-              `${jobId}: ${{
+              `${jobId}: ${JSON.stringify({
                 category_id: category.id,
                 url: contentUrl,
                 title: title,
@@ -175,7 +181,7 @@ export class 개드립 extends PageTask {
                 content_text: contentText,
                 content_img_url: contentImageUrl,
                 created_at: createdAt,
-              }}`,
+              })}`,
             );
 
             data.push({
@@ -192,9 +198,16 @@ export class 개드립 extends PageTask {
             continue;
           }
         }
-        await this.supabaseService.createContents(data);
+        const { error } = await this.supabaseService.createContents(data);
+        if (error != null) {
+          this.logger.error(error);
+        }
         total += data.length;
         pageNum += 1;
+        this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+        await this.telegramServie.sendMessage(
+          `${jobId}: ${data.length} 추가되었습니다.`,
+        );
       }
     } catch (e) {
       this.logger.error(`${jobId} ${e}`);

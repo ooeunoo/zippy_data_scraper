@@ -25,11 +25,13 @@ const value_1 = require("../../app/constants/value");
 const time_1 = require("../../app/utils/time");
 const task_constant_1 = require("../task.constant");
 const task_utils_1 = require("../task.utils");
+const telegram_service_1 = require("../../telegram/telegram.service");
 const task = task_constant_1.TASK_MAP.개드립;
 let 개드립 = class 개드립 extends page_task_1.PageTask {
-    constructor(supabaseService) {
+    constructor(supabaseService, telegramServie) {
         super(supabaseService, task.id);
         this.supabaseService = supabaseService;
+        this.telegramServie = telegramServie;
         this.isChannelRunning = false;
         this.isCategoryRunning = {};
         this.logger = new common_1.Logger(task.name);
@@ -40,7 +42,7 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
     }
     async getContentUrls(page) {
         const urls = await page.evaluate(async () => {
-            const table = document.querySelector('table > tbody');
+            const table = document.querySelector('table.ed.table.table-divider > tbody');
             const contents = table.querySelectorAll('tr:not(.notice)');
             const urls = [];
             for (const content of contents) {
@@ -100,6 +102,7 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
     async run() {
         if (this.isChannelRunning)
             return;
+        await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
         this.isChannelRunning = true;
         this.browser = await (0, task_utils_1.getBrowser)();
         await Promise.all(this.categories.map(async (category) => {
@@ -117,7 +120,8 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
         let total = 0;
         const page = await this.browser.newPage();
         try {
-            this.logger.log(`${jobId} 시작`);
+            await this.telegramServie.sendMessage(`${jobId} 작업 시작`);
+            this.logger.log(`${jobId} 작업 시작`);
             const list_view_template = this.channel.list_view_url;
             const list_view_url = list_view_template.replace('{category}', category.path);
             let pageNum = 0;
@@ -125,8 +129,9 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
                 const data = [];
                 const pageUrl = this.getPageUrl(list_view_url, pageNum);
                 await page.goto(pageUrl, {
-                    waitUntil: value_1.WAIT_UNTIL_NETWOKR_IDLE_2,
+                    waitUntil: value_1.WAIT_UNTIL_DOMCONTENT_LOADED,
                 });
+                console.log(pageUrl);
                 const urls = await this.getContentUrls(page);
                 const existsUrls = await this.findExistsUrls(urls);
                 const contentUrls = await this.removeExistsUrls(urls, existsUrls);
@@ -137,7 +142,7 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
                         const contentUrl = contentUrls_1_1.value;
                         try {
                             await page.goto(contentUrl, {
-                                waitUntil: value_1.WAIT_UNTIL_NETWOKR_IDLE_2,
+                                waitUntil: value_1.WAIT_UNTIL_DOMCONTENT_LOADED,
                             });
                             await (0, time_1.sleep)(task_constant_1.PAGE_SLEEP);
                             const title = await this.getTitle(page);
@@ -145,6 +150,15 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
                             const createdAt = await this.getCreatedAt(page);
                             const contentText = await this.getContentText(page);
                             const contentImageUrl = await this.getContentImageUrl(page, this.channel.base_url);
+                            this.logger.log(`${jobId}: ${JSON.stringify({
+                                category_id: category.id,
+                                url: contentUrl,
+                                title: title,
+                                author: author,
+                                content_text: contentText,
+                                content_img_url: contentImageUrl,
+                                created_at: createdAt,
+                            })}`);
                             data.push({
                                 category_id: category.id,
                                 url: contentUrl,
@@ -168,24 +182,32 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
-                await this.supabaseService.createContents(data);
+                const { error } = await this.supabaseService.createContents(data);
+                if (error != null) {
+                    this.logger.error(error);
+                }
                 total += data.length;
                 pageNum += 1;
+                this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+                await this.telegramServie.sendMessage(`${jobId}: ${data.length} 추가되었습니다.`);
             }
         }
         catch (e) {
             this.logger.error(`${jobId} ${e}`);
+            await this.telegramServie.sendMessage(`${jobId}: ${e}`);
         }
         finally {
             this.isCategoryRunning[jobId] = false;
-            this.logger.log(`${jobId} 끝: ${total}개 업데이트`);
+            this.logger.log(`${task.name} 작업 마침: ${total}개 업데이트되었습니다.`);
+            await this.telegramServie.sendMessage(`${task.name} 작업 마침: ${total}개 업데이트되었습니다.`);
             await page.close();
         }
     }
 };
 개드립 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [supabase_service_1.SupabaseService])
+    __metadata("design:paramtypes", [supabase_service_1.SupabaseService,
+        telegram_service_1.TelegramService])
 ], 개드립);
 exports.개드립 = 개드립;
 //# sourceMappingURL=%EA%B0%9C%EB%93%9C%EB%A6%BD.js.map

@@ -154,7 +154,7 @@ export class 디시인사이드 extends PageTask {
 
         const pageUrl = this.getPageUrl(list_view_url, pageNum);
         await page.goto(pageUrl, {
-          waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
+          waitUntil: WAIT_UNTIL_DOMCONTENT_LOADED,
         });
 
         const urls = await this.getContentUrls(
@@ -169,7 +169,7 @@ export class 디시인사이드 extends PageTask {
         for await (const contentUrl of contentUrls) {
           try {
             await page.goto(contentUrl, {
-              waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
+              waitUntil: WAIT_UNTIL_DOMCONTENT_LOADED,
             });
             await sleep(PAGE_SLEEP);
 
@@ -179,7 +179,7 @@ export class 디시인사이드 extends PageTask {
             const contentText = await this.getContentText(page);
             const contentImageUrl = await this.getContentImageUrl(page);
             this.logger.log(
-              `${jobId}: ${{
+              `${jobId}: ${JSON.stringify({
                 category_id: category.id,
                 url: contentUrl,
                 title: title,
@@ -187,7 +187,7 @@ export class 디시인사이드 extends PageTask {
                 content_text: contentText,
                 content_img_url: contentImageUrl,
                 created_at: createdAt,
-              }}`,
+              })}`,
             );
             data.push({
               category_id: category.id,
@@ -203,9 +203,16 @@ export class 디시인사이드 extends PageTask {
             continue;
           }
         }
-        await this.supabaseService.createContents(data);
+        const { error } = await this.supabaseService.createContents(data);
+        if (error != null) {
+          this.logger.error(error);
+        }
         total += data.length;
         pageNum += 1;
+        this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+        await this.telegramServie.sendMessage(
+          `${jobId}: ${data.length} 추가되었습니다.`,
+        );
       }
     } catch (e) {
       this.logger.error(`${jobId} ${e}`);
