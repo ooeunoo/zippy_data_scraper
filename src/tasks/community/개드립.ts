@@ -36,10 +36,9 @@ export class 개드립 extends PageTask {
 
   async getContentUrls(page: Page): Promise<string[]> {
     const urls = await page.evaluate(async () => {
-      const table = document.querySelector(
-        'table.ed.table.table-divider > tbody',
-      );
-      const contents = table.querySelectorAll('tr:not(.notice)');
+      const table = document.querySelector('.ed.board-list');
+      const tableBody = table.querySelector('tbody');
+      const contents = tableBody.querySelectorAll('tr:not(.notice)');
       const urls = [];
       for (const content of contents) {
         const titleSection = content.querySelector('td.title > span');
@@ -78,6 +77,9 @@ export class 개드립 extends PageTask {
     });
   }
 
+  log = (msg: any) => {
+    console.log(msg);
+  };
   async getCreatedAt(page: Page): Promise<string> {
     const createdAt = await page.evaluate(async () => {
       const _1 = document.querySelector('.ed.flex.flex-wrap');
@@ -105,7 +107,7 @@ export class 개드립 extends PageTask {
     return contentImgUrl ? baseUrl + normalizeUrl(contentImgUrl) : null;
   }
 
-  async run() {
+  async run(limitPage?: number) {
     if (this.isChannelRunning) return;
 
     await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
@@ -116,7 +118,7 @@ export class 개드립 extends PageTask {
     await Promise.all(
       this.categories.map(async (category) => {
         const jobId = `${this.channel.name_ko}/${category.name}`;
-        await this.runCategory(jobId, category);
+        await this.runCategory(jobId, category, limitPage);
       }),
     );
 
@@ -124,12 +126,25 @@ export class 개드립 extends PageTask {
     this.browser.close();
   }
 
-  async runCategory(jobId: string, category: ICategory) {
+  async runCategory(jobId: string, category: ICategory, limitPage?: number) {
     if (this.isCategoryRunning[jobId]) return;
     this.isCategoryRunning[jobId] = true;
 
     let total = 0;
     const page = await this.browser.newPage();
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      if (
+        req.resourceType() === 'stylesheet' ||
+        req.resourceType() === 'font'
+      ) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    await page.exposeFunction('log', this.log);
 
     try {
       await this.telegramServie.sendMessage(`${jobId} 작업 시작`);
@@ -143,11 +158,21 @@ export class 개드립 extends PageTask {
 
       let pageNum = 0;
       while (true) {
+        this.logger.debug(`${jobId} 작업 현재 페이지: ${pageNum}`);
+
+        if (limitPage != null) {
+          if (pageNum == limitPage) {
+            this.logger.debug(
+              `${jobId} 마지막 작업페이지 도달하여 작업을 중단합니다.`,
+            );
+            break;
+          }
+        }
         const data: IContent[] = [];
 
         const pageUrl = this.getPageUrl(list_view_url, pageNum);
         await page.goto(pageUrl, {
-          waitUntil: WAIT_UNTIL_DOMCONTENT_LOADED,
+          waitUntil: WAIT_UNTIL_NETWOKR_IDLE_2,
         });
 
         console.log(pageUrl);
@@ -165,8 +190,12 @@ export class 개드립 extends PageTask {
             await sleep(PAGE_SLEEP);
 
             const title = await this.getTitle(page);
+            console.log(title);
             const author = await this.getAuthor(page);
+            console.log(author);
             const createdAt = await this.getCreatedAt(page);
+            console.log(createdAt);
+
             const contentText = await this.getContentText(page);
             const contentImageUrl = await this.getContentImageUrl(
               page,
@@ -204,7 +233,7 @@ export class 개드립 extends PageTask {
         }
         total += data.length;
         pageNum += 1;
-        this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+        this.logger.debug(`${jobId}: ${data.length} 추가되었습니다.`);
         await this.telegramServie.sendMessage(
           `${jobId}: ${data.length} 추가되었습니다.`,
         );

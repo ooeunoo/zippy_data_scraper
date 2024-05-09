@@ -395,6 +395,7 @@ Temporary Items
 =======
 # Local
 .env
-# dist
+dist/
+.cache
 
 zippy-tasks.yaml

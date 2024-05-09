@@ -14,6 +14,7 @@ export abstract class TaskBase implements OnModuleInit {
   abstract isChannelRunning: boolean;
   abstract isCategoryRunning: Record<string, boolean>;
   abstract logger: Logger;
+  abstract run(limitPage?: number): Promise<void>;
 
   public channel: IChannel;
   public categories: ICategory[];

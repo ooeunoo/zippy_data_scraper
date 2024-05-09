@@ -92,7 +92,7 @@ let 인스티즈 = class 인스티즈 extends page_task_1.PageTask {
             return _2 === null || _2 === void 0 ? void 0 : _2.getAttribute('src');
         });
     }
-    async run() {
+    async run(limitPage) {
         if (this.isChannelRunning)
             return;
         await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
@@ -100,12 +100,12 @@ let 인스티즈 = class 인스티즈 extends page_task_1.PageTask {
         this.browser = await (0, task_utils_1.getBrowser)();
         await Promise.all(this.categories.map(async (category) => {
             const jobId = `${this.channel.name_ko}/${category.name}`;
-            await this.runCategory(jobId, category);
+            await this.runCategory(jobId, category, limitPage);
         }));
         this.isChannelRunning = false;
         this.browser.close();
     }
-    async runCategory(jobId, category) {
+    async runCategory(jobId, category, limitPage) {
         var e_1, _a;
         if (this.isCategoryRunning[jobId])
             return;
@@ -119,6 +119,13 @@ let 인스티즈 = class 인스티즈 extends page_task_1.PageTask {
             const list_view_url = list_view_template.replace('{category}', category.path);
             let pageNum = 0;
             while (true) {
+                this.logger.debug(`${jobId} 작업 현재 페이지: ${pageNum}`);
+                if (limitPage != null) {
+                    if (pageNum == limitPage) {
+                        this.logger.debug(`${jobId} 마지막 작업페이지 도달하여 작업을 중단합니다.`);
+                        break;
+                    }
+                }
                 const data = [];
                 const pageUrl = this.getPageUrl(list_view_url, pageNum);
                 await page.goto(pageUrl, {
@@ -180,7 +187,7 @@ let 인스티즈 = class 인스티즈 extends page_task_1.PageTask {
                 }
                 total += data.length;
                 pageNum += 1;
-                this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+                this.logger.debug(`${jobId}: ${data.length} 추가되었습니다.`);
                 await this.telegramServie.sendMessage(`${jobId}: ${data.length} 추가되었습니다.`);
             }
         }

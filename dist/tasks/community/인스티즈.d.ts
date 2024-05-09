@@ -19,6 +19,6 @@ export declare class 인스티즈 extends PageTask {
     getCreatedAt(page: Page): Promise<string>;
     getContentText(page: Page): Promise<string>;
     getContentImageUrl(page: Page): Promise<string>;
-    run(): Promise<void>;
-    runCategory(jobId: string, category: ICategory): Promise<void>;
+    run(limitPage?: number): Promise<void>;
+    runCategory(jobId: string, category: ICategory, limitPage?: number): Promise<void>;
 }

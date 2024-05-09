@@ -8,6 +8,7 @@ export declare abstract class TaskBase implements OnModuleInit {
     abstract isChannelRunning: boolean;
     abstract isCategoryRunning: Record<string, boolean>;
     abstract logger: Logger;
+    abstract run(limitPage?: number): Promise<void>;
     channel: IChannel;
     categories: ICategory[];
     constructor(supabaseService: SupabaseService, id: number);

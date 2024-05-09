@@ -20,6 +20,6 @@ export declare class 연합뉴스 extends PageTask {
     getContentText(page: Page): Promise<string>;
     getContentImageUrl(page: Page): Promise<string>;
     formatTimestamp(timestamp: any): string;
-    run(): Promise<void>;
-    runCategory(jobId: string, category: ICategory): Promise<void>;
+    run(limitPage?: number): Promise<void>;
+    runCategory(jobId: string, category: ICategory, limitPage?: number): Promise<void>;
 }

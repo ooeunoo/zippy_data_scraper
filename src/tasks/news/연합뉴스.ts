@@ -114,7 +114,7 @@ export class 연합뉴스 extends PageTask {
     )} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   }
 
-  async run() {
+  async run(limitPage?: number) {
     if (this.isChannelRunning) return;
     await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
 
@@ -136,7 +136,7 @@ export class 연합뉴스 extends PageTask {
     this.browser.close();
   }
 
-  async runCategory(jobId: string, category: ICategory) {
+  async runCategory(jobId: string, category: ICategory, limitPage?: number) {
     if (this.isCategoryRunning[jobId]) return;
     this.isCategoryRunning[jobId] = true;
 
@@ -155,6 +155,16 @@ export class 연합뉴스 extends PageTask {
 
       let pageNum = 0;
       while (true) {
+        this.logger.debug(`${jobId} 작업 현재 페이지: ${pageNum}`);
+
+        if (limitPage != null) {
+          if (pageNum == limitPage) {
+            this.logger.debug(
+              `${jobId} 마지막 작업페이지 도달하여 작업을 중단합니다.`,
+            );
+            break;
+          }
+        }
         const data: IContent[] = [];
 
         const pageUrl = this.getPageUrl(list_view_url, pageNum);
@@ -211,7 +221,7 @@ export class 연합뉴스 extends PageTask {
         }
         total += data.length;
         pageNum += 1;
-        this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+        this.logger.debug(`${jobId}: ${data.length} 추가되었습니다.`);
         await this.telegramServie.sendMessage(
           `${jobId}: ${data.length} 추가되었습니다.`,
         );

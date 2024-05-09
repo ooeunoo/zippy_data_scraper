@@ -36,14 +36,19 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
         this.isCategoryRunning = {};
         this.logger = new common_1.Logger(task.name);
         this.browser = null;
+        this.log = (msg) => {
+            console.log(msg);
+        };
     }
     getPageUrl(listViewUrl, page) {
         return `${listViewUrl}?page=${page + 1}`;
     }
     async getContentUrls(page) {
         const urls = await page.evaluate(async () => {
-            const table = document.querySelector('table.ed.table.table-divider > tbody');
-            const contents = table.querySelectorAll('tr:not(.notice)');
+            const table = document.querySelector('.ed.board-list');
+            const tableBody = table.querySelector('tbody');
+            this.log(table);
+            const contents = tableBody.querySelectorAll('tr:not(.notice)');
             const urls = [];
             for (const content of contents) {
                 const titleSection = content.querySelector('td.title > span');
@@ -99,7 +104,7 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
         });
         return contentImgUrl ? baseUrl + (0, url_1.normalizeUrl)(contentImgUrl) : null;
     }
-    async run() {
+    async run(limitPage) {
         if (this.isChannelRunning)
             return;
         await this.telegramServie.sendMessage(`${task.name} 작업 시작`);
@@ -107,18 +112,29 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
         this.browser = await (0, task_utils_1.getBrowser)();
         await Promise.all(this.categories.map(async (category) => {
             const jobId = `${this.channel.name_ko}/${category.name}`;
-            await this.runCategory(jobId, category);
+            await this.runCategory(jobId, category, limitPage);
         }));
         this.isChannelRunning = false;
         this.browser.close();
     }
-    async runCategory(jobId, category) {
+    async runCategory(jobId, category, limitPage) {
         var e_1, _a;
         if (this.isCategoryRunning[jobId])
             return;
         this.isCategoryRunning[jobId] = true;
         let total = 0;
         const page = await this.browser.newPage();
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            if (req.resourceType() === 'stylesheet' ||
+                req.resourceType() === 'font') {
+                req.abort();
+            }
+            else {
+                req.continue();
+            }
+        });
+        await page.exposeFunction('log', this.log);
         try {
             await this.telegramServie.sendMessage(`${jobId} 작업 시작`);
             this.logger.log(`${jobId} 작업 시작`);
@@ -126,10 +142,17 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
             const list_view_url = list_view_template.replace('{category}', category.path);
             let pageNum = 0;
             while (true) {
+                this.logger.debug(`${jobId} 작업 현재 페이지: ${pageNum}`);
+                if (limitPage != null) {
+                    if (pageNum == limitPage) {
+                        this.logger.debug(`${jobId} 마지막 작업페이지 도달하여 작업을 중단합니다.`);
+                        break;
+                    }
+                }
                 const data = [];
                 const pageUrl = this.getPageUrl(list_view_url, pageNum);
                 await page.goto(pageUrl, {
-                    waitUntil: value_1.WAIT_UNTIL_DOMCONTENT_LOADED,
+                    waitUntil: value_1.WAIT_UNTIL_NETWOKR_IDLE_2,
                 });
                 console.log(pageUrl);
                 const urls = await this.getContentUrls(page);
@@ -146,8 +169,11 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
                             });
                             await (0, time_1.sleep)(task_constant_1.PAGE_SLEEP);
                             const title = await this.getTitle(page);
+                            console.log(title);
                             const author = await this.getAuthor(page);
+                            console.log(author);
                             const createdAt = await this.getCreatedAt(page);
+                            console.log(createdAt);
                             const contentText = await this.getContentText(page);
                             const contentImageUrl = await this.getContentImageUrl(page, this.channel.base_url);
                             this.logger.log(`${jobId}: ${JSON.stringify({
@@ -188,7 +214,7 @@ let 개드립 = class 개드립 extends page_task_1.PageTask {
                 }
                 total += data.length;
                 pageNum += 1;
-                this.logger.log(`${jobId}: ${data.length} 추가되었습니다.`);
+                this.logger.debug(`${jobId}: ${data.length} 추가되었습니다.`);
                 await this.telegramServie.sendMessage(`${jobId}: ${data.length} 추가되었습니다.`);
             }
         }

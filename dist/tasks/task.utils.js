@@ -7,7 +7,7 @@ exports.getBrowser = void 0;
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const getBrowser = async () => {
     return puppeteer_1.default.launch({
-        headless: true,
+        headless: false,
         ignoreDefaultArgs: ['--disable-extensions'],
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });

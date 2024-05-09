@@ -20,6 +20,6 @@ export declare class 디시인사이드 extends PageTask {
     getContentText(page: Page): Promise<string>;
     getContentImageUrl(page: Page): Promise<string>;
     formatTimestamp(timestamp: any): string;
-    run(): Promise<void>;
-    runCategory(jobId: string, category: ICategory): Promise<void>;
+    run(limitPage?: number): Promise<void>;
+    runCategory(jobId: string, category: ICategory, limitPage?: number): Promise<void>;
 }
