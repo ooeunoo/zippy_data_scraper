@@ -15,6 +15,8 @@ import { 엠엘비파크 } from './community/엠엘비파크';
 import { 연합뉴스 } from './news/연합뉴스';
 import { 클리앙 } from './community/클리앙';
 import { TelegramModule } from '../telegram/telegram.module';
+import { 인스타그램 } from './advertise/인스타그램';
+import { 네이버뿜 } from './community/네이버뿜';
 
 @Module({
   imports: [SupabaseModule, ConfigModule.forRoot(), TelegramModule],
@@ -31,9 +33,13 @@ import { TelegramModule } from '../telegram/telegram.module';
     인스티즈,
     클리앙,
     엠엘비파크,
+    네이버뿜,
 
     // 뉴스
     연합뉴스,
+
+    // 광고
+    인스타그램,
   ],
   controllers: [TasksController],
 })

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Controller, Logger, Param, Post, Req } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Post, Req } from '@nestjs/common';
 import { 디시인사이드 } from './community/디시인사이드';
 import { 개드립 } from './community/개드립';
 import { TASK_MAP } from './task.constant';
@@ -13,6 +13,8 @@ import { 인스티즈 } from './community/인스티즈';
 import { 클리앙 } from './community/클리앙';
 import { 엠엘비파크 } from './community/엠엘비파크';
 import { 연합뉴스 } from './news/연합뉴스';
+import { 인스타그램 } from './advertise/인스타그램';
+import { 네이버뿜 } from './community/네이버뿜';
 
 @Controller('task')
 export class TasksController {
@@ -31,9 +33,13 @@ export class TasksController {
     private readonly _인스티즈: 인스티즈,
     private readonly _클리앙: 클리앙,
     private readonly _엠엘비파크: 엠엘비파크,
+    private readonly _네이버뿜: 네이버뿜,
 
     // 뉴스
     private readonly _연합뉴스: 연합뉴스,
+
+    // 광고
+    private readonly _인스타그램: 인스타그램,
   ) {}
 
   @Post(':id')
@@ -72,6 +78,9 @@ export class TasksController {
         break;
       case TASK_MAP.엠엘비파크.name:
         await this._엠엘비파크.run();
+        break;
+      case TASK_MAP.네이버뿜.name:
+        await this._네이버뿜.run();
         break;
       //뉴스
       case TASK_MAP.연합뉴스.name:

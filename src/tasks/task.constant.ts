@@ -51,6 +51,10 @@ export const TASK_MAP = {
     id: 14,
     name: '매일경제',
   },
+  네이버뿜: {
+    id: 15,
+    name: '네이버뿜',
+  },
 };
 
 export const PAGE_SLEEP = 2000;
