@@ -1,8 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Controller, Get, Logger, Param, Post, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { 디시인사이드 } from './community/디시인사이드';
 import { 개드립 } from './community/개드립';
-import { TASK_MAP } from './task.constant';
+import { AD_MAP, TASK_MAP } from './task.constant';
 import { 네이트판 } from './community/네이트판';
 import { 루리웹 } from './community/루리웹';
 import { 뽐뿌 } from './community/뽐뿌';
@@ -170,5 +178,13 @@ export class TasksController {
       console.log(e);
     }
     return true;
+  }
+  @Post('ad/:id')
+  async startAd(@Param('id') id: string) {
+    switch (id) {
+      case AD_MAP.인스타그램.name:
+        await this._인스타그램.run();
+        break;
+    }
   }
 }

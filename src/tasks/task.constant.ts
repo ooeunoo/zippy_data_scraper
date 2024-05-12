@@ -57,4 +57,10 @@ export const TASK_MAP = {
   },
 };
 
+export const AD_MAP = {
+  인스타그램: {
+    name: '인스타그램',
+  },
+};
+
 export const PAGE_SLEEP = 2000;
