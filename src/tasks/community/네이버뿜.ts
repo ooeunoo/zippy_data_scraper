@@ -67,7 +67,7 @@ export class 네이버뿜 extends CustomTask {
         .replace(/\s/g, '')
         .replace(/-$/, '');
 
-      const imageSection = await page.$('.ListItem_thumb__mv_1S > img');
+      const imageSection = await row.$('.ListItem_thumb__mv_1S > img');
       const imageUrl = await imageSection.evaluate((el) =>
         el.getAttribute('src'),
       );
