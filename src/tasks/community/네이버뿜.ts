@@ -115,7 +115,7 @@ export class 네이버뿜 extends CustomTask {
     if (this.isCategoryRunning[jobId]) return;
     this.isCategoryRunning[jobId] = true;
 
-    const total = 0;
+    let total = 0;
     const page = await this.browser.newPage();
 
     try {
@@ -142,9 +142,7 @@ export class 네이버뿜 extends CustomTask {
           startIndex,
         );
         const urls = contents.map((content) => content.url);
-        console.log(urls);
         startIndex += urls.length;
-
         const existsUrls = await this.findExistsUrls(urls);
         const contentUrls = await this.removeExistsUrls(urls, existsUrls);
 
@@ -154,11 +152,18 @@ export class 네이버뿜 extends CustomTask {
 
         if (newContents.length == 0) break;
 
-        await this.supabaseService.createContents(newContents);
+        const { error } = await this.supabaseService.createContents(
+          newContents,
+        );
+
+        if (error != null) {
+          this.logger.error(error);
+        }
+        total += newContents.length;
 
         await this.scrollBottom(page);
 
-        await sleep(5000);
+        await sleep(10000);
       }
     } catch (e) {
       this.logger.error(`${jobId} ${e}`);
