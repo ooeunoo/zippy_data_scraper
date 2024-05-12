@@ -94,37 +94,7 @@ export class TasksController {
   async startAll(@Param('page') page: number) {
     try {
       try {
-        await this._루리웹.run(page);
-      } catch (e) {}
-      try {
-        await this._개드립.run(page);
-      } catch (e) {}
-      try {
-        await this._네이트판.run(page);
-      } catch (e) {}
-      try {
-        await this._뽐뿌.run(page);
-      } catch (e) {}
-      try {
-        await this._디시인사이드.run(page);
-      } catch (e) {}
-      try {
-        await this._에펨코리아.run(page);
-      } catch (e) {}
-      try {
-        await this._오늘의유머.run(page);
-      } catch (e) {}
-      try {
-        await this._웃긴대학.run(page);
-      } catch (e) {}
-      try {
-        await this._인스티즈.run(page);
-      } catch (e) {}
-      try {
-        await this._클리앙.run(page);
-      } catch (e) {}
-      try {
-        await this._엠엘비파크.run(page);
+        await this._네이버뿜.run(page);
       } catch (e) {}
       try {
         await this._루리웹.run(page);
@@ -158,6 +128,42 @@ export class TasksController {
       } catch (e) {}
       try {
         await this._엠엘비파크.run(page);
+      } catch (e) {}
+      try {
+        await this._루리웹.run(page);
+      } catch (e) {}
+      try {
+        await this._개드립.run(page);
+      } catch (e) {}
+      try {
+        await this._네이트판.run(page);
+      } catch (e) {}
+      try {
+        await this._뽐뿌.run(page);
+      } catch (e) {}
+      try {
+        await this._디시인사이드.run(page);
+      } catch (e) {}
+      try {
+        await this._에펨코리아.run(page);
+      } catch (e) {}
+      try {
+        await this._오늘의유머.run(page);
+      } catch (e) {}
+      try {
+        await this._웃긴대학.run(page);
+      } catch (e) {}
+      try {
+        await this._인스티즈.run(page);
+      } catch (e) {}
+      try {
+        await this._클리앙.run(page);
+      } catch (e) {}
+      try {
+        await this._엠엘비파크.run(page);
+      } catch (e) {}
+      try {
+        await this._네이버뿜.run(page);
       } catch (e) {}
       this.logger.log('작업이 모두 완료되었습니다.');
     } catch (e) {
